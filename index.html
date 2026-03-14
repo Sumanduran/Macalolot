@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digitalized Guidance Counseling Record System</title>
+
+<!-- Chart.js for analytics -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* --- RESET & BODY --- */
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+  padding: 0;
+  transition: background 0.3s;
+}
+
+header {
+  background: #2c3e50;
+  color: white;
+  text-align: center;
+  padding: 15px 20px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Logo */
+header img {
+  height: 40px;
+  border-radius: 8px;
+  transition: transform 0.3s;
+}
+header img:hover {
+  transform: rotate(10deg);
+}
+
+/* NAVBAR */
+.navbar {
+  background: #34495e;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.navbar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar li {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+.navbar li:hover {
+  background: #2c3e50;
+}
+
+/* Hamburger menu */
+.menu-toggle {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.menu-toggle.open {
+  transform: rotate(90deg);
+}
+
+/* MOBILE MENU */
+@media(max-width:768px){
+  .navbar ul {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    background: #34495e;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease;
+  }
+  .navbar ul.show {
+    display: flex;
+    max-height: 500px;
+  }
+  .menu-toggle {
+    display: block;
+  }
+}
+
+/* CONTAINER & BOXES */
+.container {
+  width: 90%;
+  max-width: 1000px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+.form-box, .dashboard {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.form-box:hover, .dashboard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+/* FORM INPUTS */
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 35px;
+  transition: border 0.3s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: #27ae60;
+  outline: none;
+}
+
+/* BUTTONS */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 35px;
+  background: #27ae60;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  
+}
+button:hover {
+  background: #219150;
+  transform: translateY(-2px);
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  overflow-x: auto;
+}
+th, td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  transition: background 0.3s;
+}
+th {
+  background: #34495e;
+  color: white;
+}
+tr:hover td {
+  background: #ecf0f1;
+}
+
+.deleteBtn {
+  background: red;
+  padding: 5px 10px;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.deleteBtn:hover { background: darkred; }
+
+.printBtn {
+  background: #2980b9;
+  padding: 5px 10px;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.printBtn:hover { background: #1f6391; }
+
+.editBtn {
+  background: #f39c12;
+  padding: 5px 10px;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.editBtn:hover { background: #d78b00; }
+
+/* AUTH BOX */
+.auth-box {
+  width: 350px;
+  margin: auto;
+  margin-top: 80px;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  background: linear-gradient(45deg, #ff512f, #dd2476, #24c6dc, #514a9d);
+      background-size: 400% 400%;
+      animation: gradientMove 10s ease infinite;
+      color: #fff;
+     
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  
+.auth-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.linkBtn {
+  background: none;
+  color: blue;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.stat {
+  font-size: 18px;
+  margin: 8px 0;
+}
+
+.section {
+  margin-bottom: 40px;
+  display: none;
+}
+
+canvas { max-width: 100%; }
+
+#imgPreview {
+  display: block;
+  margin-bottom: 10px;
+  max-width: 150px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: transform 0.3s;
+}
+#imgPreview:hover { transform: scale(1.05); }
+
+#searchInput {
+  margin-bottom: 15px;
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border 0.3s;
+}
+#searchInput:focus { border-color: #27ae60; }
+
+.pagination {
+  text-align: center;
+  margin-top: 10px;
+}
+.pagination button {
+  margin: 0 3px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  background: #34495e;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.pagination button.active {
+  background: #27ae60;
+}
+.pagination button:hover { background: #2c3e50; }
+  
+
+</style>
+</head>
+
+<body>
+
+<header>
+<img src="jelong.png" alt="Logo">
+Digitalized Guidance Counseling Record System
+</header>
+
+<!-- LOGIN -->
+<div id="loginPage" class="auth-box">
+<h2>Login</h2>
+<label>Username</label>
+<input type="text" id="loginUser">
+<label>Password</label>
+<input type="password" id="loginPass">
+<button onclick="login()">Login</button>
+<p>No account? <button class="linkBtn" onclick="showRegister()">Register</button></p>
+</div>
+
+<!-- REGISTER -->
+<div id="registerPage" class="auth-box" style="display:none;">
+<h2>Register</h2>
+<label>Username</label>
+<input type="text" id="regUser">
+<label>Password</label>
+<input type="password" id="regPass">
+<button onclick="register()">Register</button>
+<p>Already have account? <button class="linkBtn" onclick="showLogin()">Login</button></p>
+</div>
+
+<!-- MAIN SYSTEM -->
+<div id="systemPage" style="display:none;">
+
+<div class="navbar">
+<span class="menu-toggle" onclick="toggleMenu()">☰</span>
+<ul id="menuList">
+<li onclick="showSection('about')">About System</li>
+<li onclick="showSection('analytics')">Report Analytics</li>
+<li onclick="showSection('addRecord')">Add Counseling Record</li>
+<li onclick="showSection('records')">Student Counseling Records</li>
+<li onclick="logout()">Logout</li>
+</ul>
+</div>
+
+<div class="container">
+
+<!-- ABOUT -->
+<div id="about" class="section">
+<div class="dashboard">
+<h2>About System</h2>
+<p>This Digitalized Guidance Counseling Record System helps guidance counselors manage student counseling cases, track case status, generate reports, and print counseling forms easily.</p>
+</div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="analytics" class="section">
+<div class="dashboard">
+<h2>Report Analytics</h2>
+<div class="stat">Total Cases: <span id="totalCases">0</span></div>
+<div class="stat">Open Cases: <span id="openCases">0</span></div>
+<div class="stat">Ongoing Cases: <span id="ongoingCases">0</span></div>
+<div class="stat">Resolved Cases: <span id="resolvedCases">0</span></div>
+<canvas id="analyticsChart" height="150"></canvas>
+</div>
+</div>
+
+<!-- ADD/EDIT RECORD -->
+<div id="addRecord" class="section">
+<div class="form-box">
+<h2 id="formTitle">Add Counseling Record</h2>
+<label>Student Name</label>
+<input type="text" id="name">
+<label>Student ID</label>
+<input type="text" id="studentId">
+<label>Course / Grade</label>
+<input type="text" id="course">
+<label>Date</label>
+<input type="date" id="date">
+<label>Counseling Concern</label>
+<textarea id="concern"></textarea>
+<label>Counselor Notes</label>
+<textarea id="notes"></textarea>
+<label>Case Status</label>
+<select id="status">
+<option>Open</option>
+<option>Ongoing</option>
+<option>Resolved</option>
+</select>
+<label>Upload Student Photo</label>
+<input type="file" id="studentPhoto" accept="image/*" onchange="previewImage(event)">
+<img id="imgPreview" src="" alt="Image Preview" style="display:none;">
+<button id="saveBtn" onclick="addRecord()">Save Record</button>
+<button id="cancelEditBtn" style="display:none;background:#95a5a6;" onclick="cancelEdit()">Cancel</button>
+</div>
+</div>
+
+<!-- RECORDS -->
+<div id="records" class="section">
+<h2>Student Counseling Records</h2>
+<input type="text" id="searchInput" placeholder="Search by name, ID, course, or status..." onkeyup="searchRecords()">
+<table>
+<thead>
+<tr>
+<th>Photo</th>
+<th>Name</th>
+<th>ID</th>
+<th>Course</th>
+<th>Date</th>
+<th>Concern</th>
+<th>Notes</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="recordTable"></tbody>
+</table>
+<div class="pagination" id="pagination"></div>
+</div>
+
+</div> <!-- container -->
+</div> <!-- systemPage -->
+
+<script>
+// --- EXISTING JS CODE REMAINS UNCHANGED ---
+let records = JSON.parse(localStorage.getItem("guidanceRecords")) || [];
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let editIndex = null;
+let currentPage = 1;
+let recordsPerPage = 5;
+let filteredRecords = records;
+
+/* NAVIGATION */
+function toggleMenu(){
+  let menu = document.getElementById("menuList");
+  menu.classList.toggle("show");
+  document.querySelector(".menu-toggle").classList.toggle("open");
+}
+function showSection(id){
+  ['about','analytics','addRecord','records'].forEach(sec=>{
+    document.getElementById(sec).style.display='none';
+  });
+  document.getElementById(id).style.display='block';
+}
+
+/* LOGIN / REGISTER */
+function showRegister(){ document.getElementById("loginPage").style.display="none"; document.getElementById("registerPage").style.display="block"; }
+function showLogin(){ document.getElementById("registerPage").style.display="none"; document.getElementById("loginPage").style.display="block"; }
+
+function register(){
+  let user=document.getElementById("regUser").value;
+  let pass=document.getElementById("regPass").value;
+  if(!user||!pass){ alert("Fill all fields"); return;}
+  if(users.find(u=>u.username===user)){ alert("Username already exists"); return;}
+  users.push({username:user,password:pass});
+  localStorage.setItem("users",JSON.stringify(users));
+  alert("Registration successful"); showLogin();
+}
+
+function login(){
+  let user=document.getElementById("loginUser").value;
+  let pass=document.getElementById("loginPass").value;
+  let found=users.find(u=>u.username===user && u.password===pass);
+  if(found){
+    localStorage.setItem("loggedIn","true");
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("systemPage").style.display="block";
+    showSection('about');
+    displayRecords();
+  } else { alert("Invalid login"); }
+}
+
+function logout(){
+  if(confirm("Logout?")){
+    localStorage.removeItem("loggedIn");
+    document.getElementById("systemPage").style.display="none";
+    document.getElementById("loginPage").style.display="block";
+  }
+}
+
+/* IMAGE PREVIEW */
+function previewImage(event){
+  let preview=document.getElementById("imgPreview");
+  preview.src=URL.createObjectURL(event.target.files[0]);
+  preview.style.display="block";
+}
+
+/* SEARCH */
+function searchRecords(){
+  let query = document.getElementById("searchInput").value.toLowerCase();
+  filteredRecords = records.filter(r=>{
+    return r.name.toLowerCase().includes(query) ||
+           r.studentId.toLowerCase().includes(query) ||
+           r.course.toLowerCase().includes(query) ||
+           r.status.toLowerCase().includes(query);
+  });
+  currentPage = 1;
+  displayRecords();
+}
+
+/* DISPLAY RECORDS WITH PAGINATION */
+function displayRecords(){
+  let table=document.getElementById("recordTable"); table.innerHTML="";
+  let start = (currentPage-1)*recordsPerPage;
+  let end = start+recordsPerPage;
+  let paginatedRecords = filteredRecords.slice(start,end);
+
+  paginatedRecords.forEach((r,i)=>{
+    table.innerHTML+=`<tr>
+      <td>${r.photo?'<img src="'+r.photo+'" width="50" style="border-radius:5px;">':''}</td>
+      <td>${r.name}</td><td>${r.studentId}</td><td>${r.course}</td><td>${r.date}</td>
+      <td>${r.concern}</td><td>${r.notes}</td><td>${r.status}</td>
+      <td>
+        <button class="printBtn" onclick="printRecord(${records.indexOf(r)})">Print</button>
+        <button class="editBtn" onclick="editRecord(${records.indexOf(r)})">Edit</button>
+        <button class="deleteBtn" onclick="deleteRecord(${records.indexOf(r)})">Delete</button>
+      </td></tr>`;
+  });
+
+  renderPagination();
+  updateAnalytics();
+}
+
+function renderPagination(){
+  let totalPages = Math.ceil(filteredRecords.length/recordsPerPage);
+  let pagination = document.getElementById("pagination");
+  pagination.innerHTML = "";
+  for(let i=1;i<=totalPages;i++){
+    let btn = document.createElement("button");
+    btn.innerText=i;
+    if(i===currentPage) btn.classList.add("active");
+    btn.onclick=(()=>{currentPage=i; displayRecords();});
+    pagination.appendChild(btn);
+  }
+}
+
+/* ADD/EDIT RECORD */
+function addRecord(){
+  let name=document.getElementById("name").value;
+  let studentId=document.getElementById("studentId").value;
+  if(!name||!studentId){ alert("Fill required fields"); return;}
+  
+  let photoInput=document.getElementById("studentPhoto");
+  if(photoInput.files[0]){
+    let reader = new FileReader();
+    reader.onload=function(e){ saveRecord(e.target.result); }
+    reader.readAsDataURL(photoInput.files[0]);
+  } else {
+    saveRecord(editIndex!==null?records[editIndex].photo:'');
+  }
+
+  function saveRecord(photo){
+    let recordObj={
+      name, studentId,
+      course:document.getElementById("course").value,
+      date:document.getElementById("date").value,
+      concern:document.getElementById("concern").value,
+      notes:document.getElementById("notes").value,
+      status:document.getElementById("status").value,
+      photo
+    };
+    if(editIndex !== null){
+      records[editIndex] = recordObj;
+      editIndex = null;
+      document.getElementById("formTitle").innerText="Add Counseling Record";
+      document.getElementById("saveBtn").innerText="Save Record";
+      document.getElementById("cancelEditBtn").style.display="none";
+    } else {
+      records.push(recordObj);
+    }
+    localStorage.setItem("guidanceRecords",JSON.stringify(records));
+    filteredRecords = records;
+    currentPage = 1;
+    displayRecords();
+    clearForm();
+  }
+}
+
+function editRecord(i){
+  editIndex = i;
+  let r = records[i];
+  document.getElementById("formTitle").innerText="Edit Counseling Record";
+  document.getElementById("saveBtn").innerText="Update Record";
+  document.getElementById("cancelEditBtn").style.display="inline-block";
+
+  document.getElementById("name").value = r.name;
+  document.getElementById("studentId").value = r.studentId;
+  document.getElementById("course").value = r.course;
+  document.getElementById("date").value = r.date;
+  document.getElementById("concern").value = r.concern;
+  document.getElementById("notes").value = r.notes;
+  document.getElementById("status").value = r.status;
+  if(r.photo){
+    document.getElementById("imgPreview").src = r.photo;
+    document.getElementById("imgPreview").style.display = "block";
+  }
+  showSection('addRecord');
+}
+
+function cancelEdit(){
+  editIndex = null;
+  document.getElementById("formTitle").innerText="Add Counseling Record";
+  document.getElementById("saveBtn").innerText="Save Record";
+  document.getElementById("cancelEditBtn").style.display="none";
+  clearForm();
+}
+
+function clearForm(){
+  document.getElementById("name").value="";
+  document.getElementById("studentId").value="";
+  document.getElementById("course").value="";
+  document.getElementById("date").value="";
+  document.getElementById("concern").value="";
+  document.getElementById("notes").value="";
+  document.getElementById("status").value="Open";
+  document.getElementById("studentPhoto").value="";
+  document.getElementById("imgPreview").style.display="none";
+}
+
+function deleteRecord(i){
+  if(confirm("Delete this record?")){
+    records.splice(i,1);
+    localStorage.setItem("guidanceRecords",JSON.stringify(records));
+    filteredRecords = records;
+    if(currentPage>Math.ceil(filteredRecords.length/recordsPerPage)) currentPage--;
+    displayRecords();
+  }
+}
+
+/* ANALYTICS */
+function updateAnalytics(){
+  let total=records.length;
+  let open=records.filter(r=>r.status==="Open").length;
+  let ongoing=records.filter(r=>r.status==="Ongoing").length;
+  let resolved=records.filter(r=>r.status==="Resolved").length;
+  document.getElementById("totalCases").innerText=total;
+  document.getElementById("openCases").innerText=open;
+  document.getElementById("ongoingCases").innerText=ongoing;
+  document.getElementById("resolvedCases").innerText=resolved;
+
+  if(window.analyticsChartInstance) window.analyticsChartInstance.destroy();
+  let ctx=document.getElementById("analyticsChart").getContext("2d");
+  window.analyticsChartInstance=new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:['Open','Ongoing','Resolved'],
+      datasets:[{ data:[open,ongoing,resolved], backgroundColor:['#e74c3c','#f39c12','#27ae60'] }]
+    },
+    options:{ responsive:true, plugins:{legend:{position:'bottom'}} }
+  });
+}
+
+/* PRINT */
+function printRecord(i){
+  let r=records[i];
+  let content=`<h2>Counseling Record</h2>
+    ${r.photo?'<img src="'+r.photo+'" width="100" style="border-radius:5px;"><br>':''}
+    <p><b>Name:</b> ${r.name}</p>
+    <p><b>Student ID:</b> ${r.studentId}</p>
+    <p><b>Course:</b> ${r.course}</p>
+    <p><b>Date:</b> ${r.date}</p>
+    <p><b>Concern:</b> ${r.concern}</p>
+    <p><b>Notes:</b> ${r.notes}</p>
+    <p><b>Status:</b> ${r.status}</p>`;
+  let win=window.open("","","width=600,height=600"); win.document.write(content); win.print();
+}
+
+/* AUTO LOGIN */
+if(localStorage.getItem("loggedIn")=="true"){
+  document.getElementById("loginPage").style.display="none";
+  document.getElementById("systemPage").style.display="block";
+  showSection('about'); displayRecords();
+}
+</script>
+
+</body>
+</html>
